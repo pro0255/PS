@@ -194,6 +194,9 @@ run_characteristics(data_amber, "Amber with outliers")
 
 
 
+data_amber_teplota_5_withoutliers = data_amber$tok_teplota_5
+data_amber_teplota_22_withoutliers = data_amber$tok_teplota_22
+
 
 data_amber_teplota_5_withoutoutliers = data_amber$tok_teplota_5_out[!is.na(data_amber$tok_teplota_5_out)]
 data_amber_teplota_22_withoutoutliers = data_amber$tok_teplota_22_out[!is.na(data_amber$tok_teplota_22_out)]
@@ -202,6 +205,43 @@ print("5")
 vector_characteristics(data_amber_teplota_5_withoutoutliers)
 print("22")
 vector_characteristics(data_amber_teplota_22_withoutoutliers)
+
+
+
+#hradby
+
+calc_hradby = function(data) {
+  IQR = quantile(data, 0.75, na.rm=T) - quantile(data, 0.25, na.rm=T)  # mezikvartilové rozpěti
+  # nebo
+  IQR = IQR(data)
+  
+  dolni_mez = quantile(data, 0.25, na.rm=T) - 1.5*IQR  # výpočet dolní mezi vnitřních hradeb
+  horni_mez = quantile(data, 0.75, na.rm=T) + 1.5*IQR  # výpočet horní mezi vnitřních hradeb
+  
+  # Definování nového sloupce, ve kterém budou odlehlá pozorování odstraněna
+  print(dolni_mez)
+  print(horni_mez)
+}
+
+#Meze vnitřních hradeb zaokrouhlujeme na o jednu cifru vyšší přesnost, než data v datovém souboru.
+print("Teplota 5 with")
+calc_hradby(data_amber_teplota_5_withoutliers)
+print("Teplota 22 with")
+calc_hradby(data_amber_teplota_22_withoutliers)
+
+
+print("Teplota 5 without")
+calc_hradby(data_amber_teplota_5_withoutoutliers)
+print("Teplota 22 without")
+calc_hradby(data_amber_teplota_22_withoutoutliers)
+
+
+
+
+
+
+
+
 
 
 #graphs
@@ -226,7 +266,7 @@ colnames(data_plot) = c("toky", typ)
 
 
 ##Histogram
-binwidth = 5
+binwidth = 10
 ggplot(data_plot,
        aes(x = toky))+
   geom_histogram(color="black", fill="gray", binwidth = binwidth)+
@@ -264,19 +304,49 @@ ggplot(data_plot,
 
 
 
+
+
+
+
 #otazky:
 
 
-#grafy v poho?
-#grafy title?
+#grafy v poho?, grafy title?
 #outliers separatně ok?
+#zaokrouhleni?
+#meze vnitřních hradeb zaokrouhlujeme na o jednu cifru vyšší přesnost, než data v datovém souboru.?
 
 
 
 
+#782.1157
+#782.1
+u_5 = 782.1157
 
 
+#782.7085
+#782.7
+u_22 = 782.7085
 
+
+# 17.42455
+#17.5
+s_5 =  17.42455
+#17.07477 
+#17.1
+s_22 = 17.07477
+  	
+
+calc_x = function(u,s,k) {
+  
+  print(u-(s*k))
+  print(u+(s*k))
+  
+}
+
+
+calc_x(u_5, s_5, 2)
+calc_x(u_22, s_22, 2)
 
 
 

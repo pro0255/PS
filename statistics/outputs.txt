@@ -1,0 +1,85 @@
+[1] "Amber with outliers"
+[1] "5"
+    rozsah minimum      Q1   prumer median     Q3 maximum  rozptyl smerodatna_odchylka variacni_koeficient   sikmost
+25%     72   652.1 763.425 778.6056 782.45 796.65   813.4 732.7541            27.06943            3.476655 -2.521709
+    spicatost
+25%  9.535523
+[1] "22"
+    rozsah minimum     Q1   prumer median     Q3 maximum  rozptyl smerodatna_odchylka variacni_koeficient   sikmost
+25%     72   658.3 767.35 780.9806 784.55 795.85   814.4 502.4061            22.41442            2.870035 -2.216095
+    spicatost
+25%  10.47049
+> 
+> 
+> 
+> data_amber_teplota_5_withoutliers = data_amber$tok_teplota_5
+> data_amber_teplota_22_withoutliers = data_amber$tok_teplota_22
+> 
+> 
+> data_amber_teplota_5_withoutoutliers = data_amber$tok_teplota_5_out[!is.na(data_amber$tok_teplota_5_out)]
+> data_amber_teplota_22_withoutoutliers = data_amber$tok_teplota_22_out[!is.na(data_amber$tok_teplota_22_out)]
+> print("Amber without outliers")
+[1] "Amber without outliers"
+> print("5")
+[1] "5"
+> vector_characteristics(data_amber_teplota_5_withoutoutliers)
+    rozsah minimum    Q1   prumer median     Q3 maximum rozptyl smerodatna_odchylka variacni_koeficient     sikmost
+25%     70   750.3 767.2 782.1157  782.8 796.95   813.4 303.615            17.42455            2.227874 -0.08762061
+    spicatost
+25% -1.072082
+> print("22")
+[1] "22"
+> vector_characteristics(data_amber_teplota_22_withoutoutliers)
+    rozsah minimum    Q1   prumer median  Q3 maximum  rozptyl smerodatna_odchylka variacni_koeficient     sikmost
+25%     71   754.9 767.8 782.7085  785.1 796   814.4 291.5476            17.07477            2.181498 -0.05566995
+    spicatost
+25% -1.073052
+> 
+> 
+> 
+> #hradby
+> 
+> calc_hradby = function(data) {
++   IQR = quantile(data, 0.75, na.rm=T) - quantile(data, 0.25, na.rm=T)  # mezikvartilové rozpěti
++   # nebo
++   IQR = IQR(data)
++   
++   dolni_mez = quantile(data, 0.25, na.rm=T) - 1.5*IQR  # výpočet dolní mezi vnitřních hradeb
++   horni_mez = quantile(data, 0.75, na.rm=T) + 1.5*IQR  # výpočet horní mezi vnitřních hradeb
++   
++   # Definování nového sloupce, ve kterém budou odlehlá pozorování odstraněna
++   print(dolni_mez)
++   print(horni_mez)
++ }
+> 
+> #Meze vnitřních hradeb zaokrouhlujeme na o jednu cifru vyšší přesnost, než data v datovém souboru.
+> print("Teplota 5 with")
+[1] "Teplota 5 with"
+> calc_hradby(data_amber_teplota_5_withoutliers)
+     25% 
+713.5875 
+     75% 
+846.4875 
+> print("Teplota 22 with")
+[1] "Teplota 22 with"
+> calc_hradby(data_amber_teplota_22_withoutliers)
+  25% 
+724.6 
+  75% 
+838.6 
+> 
+> 
+> print("Teplota 5 without")
+[1] "Teplota 5 without"
+> calc_hradby(data_amber_teplota_5_withoutoutliers)
+    25% 
+722.575 
+    75% 
+841.575 
+> print("Teplota 22 without")
+[1] "Teplota 22 without"
+> calc_hradby(data_amber_teplota_22_withoutoutliers)
+  25% 
+725.5 
+  75% 
+838.3 
