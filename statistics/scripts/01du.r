@@ -253,12 +253,25 @@ toky = data_amber[, c(name_c_5, name_c_22)]
 type_tok_5 = 'Teplota 5°C'
 type_tok_22 = 'Teplota 22°C'
 
+
 colnames(toky) = c(type_tok_5, type_tok_22)
 
 data_plot = stack(toky)
 
+
+t_5_out = "tok_teplota_5_out"
+t_22_out = "tok_teplota_22_out"
+toky_withoutoutliers = data_amber[, c(t_5_out, t_22_out)]
+
+colnames(toky_withoutoutliers) = c(type_tok_5, type_tok_22)
+
+data_plot_withoutoutliers = stack(toky_withoutoutliers)
+
+
+
 typ = "typ"
 colnames(data_plot) = c("toky", typ)
+colnames(data_plot_withoutoutliers) = c("toky", typ)
 
 
   
@@ -266,8 +279,8 @@ colnames(data_plot) = c("toky", typ)
 
 
 ##Histogram
-binwidth = 10
-ggplot(data_plot,
+binwidth = 7
+ggplot(data_plot_withoutoutliers,
        aes(x = toky))+
   geom_histogram(color="black", fill="gray", binwidth = binwidth)+
   stat_bin(binwidth=binwidth, geom="text", colour="white", aes(label=..count..), position=position_stack(vjust=0.5)) +
@@ -279,7 +292,7 @@ ggplot(data_plot,
 
 
 ##QQ
-ggplot(data_plot, 
+ggplot(data_plot_withoutoutliers, 
        aes(sample = toky))+
   stat_qq() +
   stat_qq_line() +
@@ -308,14 +321,14 @@ ggplot(data_plot,
 
 
 
-#otazky:
+#otazky nezapomenout:
 
 
-#grafy v poho?, grafy title?
+#grafy v pohodě?, grafy title?
 #outliers separatně ok?
 #zaokrouhleni?
-#meze vnitřních hradeb zaokrouhlujeme na o jednu cifru vyšší přesnost, než data v datovém souboru.?
-
+#meze vnitřních hradeb zaokrouhlujeme na o jednu cifru vyšší přesnost, než data v datovém souboru?
+#3s pravidlo zaokrouhlena hodnota? spíše předpokládám nezaokrouhlenou..
 
 
 
