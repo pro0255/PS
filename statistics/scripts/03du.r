@@ -6,6 +6,7 @@ library(dplyr)
 library(ggplot2)
 library(lawstat)
 library(BSDA)
+library(car)
 
 getwd()
 
@@ -523,6 +524,141 @@ vector_characteristics(s_data_du2$pokles[s_data_du2$vyrobce == "Bright"])
 
 # 3.140029 
 vector_characteristics(s_data_du2$pokles[s_data_du2$vyrobce == "Amber"])
+
+#### konec 2
+
+
+#### zacatek 3
+
+
+#a
+
+#create data structure
+selector_du3 = c("tok_teplota_5", "tok_teplota_5_out", "vyrobce")
+data_du3 = s_data[, selector_du3]
+
+#make data vizualization
+
+##Krabice
+
+#with outliers
+ggplot(data_du3,
+       aes(x = vyrobce,
+           y = tok_teplota_5))+ # estetika
+  geom_boxplot()+
+  stat_boxplot(geom = "errorbar", 
+               width = 0.2) +
+  labs(x = "",
+       y = krabice_title) + theme_bw() +
+  theme(axis.text = element_text(size = 13),
+        axis.title = element_text(size = 13))
+
+
+
+#without outliers
+ggplot(data_du3,
+       aes(x = vyrobce,
+           y = tok_teplota_5_out))+ # estetika
+  geom_boxplot()+
+  stat_boxplot(geom = "errorbar", 
+               width = 0.2) +
+  labs(x = "",
+       y = krabice_title) + theme_bw() +
+  theme(axis.text = element_text(size = 13),
+        axis.title = element_text(size = 13))
+
+
+
+
+
+
+binwidth = 8
+ggplot(data_du3,
+       aes(x = tok_teplota_5_out))+
+  geom_histogram(color="black", fill="gray", binwidth = binwidth)+
+  stat_bin(binwidth=binwidth, geom="text", colour="white", aes(label=..count..), position=position_stack(vjust=0.5)) +
+  labs(y="četnost", x="světelný tok (lm)")+
+  facet_wrap(name_c_cat, nrow =  2) + theme_bw()+
+ theme(axis.text = element_text(size = 13),axis.title = element_text(size = 13))
+
+
+
+
+##QQ
+ggplot(data_du3, 
+       aes(sample = tok_teplota_5_out))+
+  stat_qq() +
+  stat_qq_line() +
+  labs(y="vyběrové kvantily", x="norm. teoretické kvantily")+
+  facet_wrap(name_c_cat, nrow =  2, 
+             scales = "free")+
+  theme_bw() +
+  theme(axis.text = element_text(size = 13),
+        axis.title = element_text(size = 13))
+
+
+#b
+tapply(data_du3$tok_teplota_5_out, data_du3$vyrobce, moments::skewness, na.rm =T) #šikmost
+
+#        Amber        Bright         Clear           Dim 
+#-0.0876206068 -0.0005222603 -0.0849482178 -0.1690739422 
+
+tapply(data_du3$tok_teplota_5_out, data_du3$vyrobce, moments::kurtosis, na.rm =T)-3 #špičatost
+
+
+#     Amber     Bright      Clear        Dim 
+#-1.0720822 -0.9846829 -0.8359846 -0.6902268 
+
+tapply(data_du3$tok_teplota_5_out, data_du3$vyrobce, shapiro.test)
+
+vyznamnost = 0.05
+
+0.03169 < vyznamnost
+0.04621 < vyznamnost
+0.1211 < vyznamnost
+0.0232 < vyznamnost
+
+tapply(data_du3$tok_teplota_5_out, data_du3$vyrobce, symmetry.test, boot = FALSE)
+
+
+
+0.6765 < vyznamnost
+0.9854 < vyznamnost
+0.4133 < vyznamnost
+0.01651 < vyznamnost
+
+
+
+
+#c
+# Empiricky - poměr výběrových rozptylů (největší ku nejmenšímu) < 2 ?
+tapply(data_du3$tok_teplota_5_out, data_du3$vyrobce, var, na.rm =T)
+
+
+var_res = 717.1908 / 303.6150
+var_res < 2
+
+
+#Exaktně
+#bartlett.test(data_du3$tok_teplota_5_out~data_du3$vyrobce)
+
+# Exaktně - Leveneho test o shodě rozptylů pro data, která nepochází z normálního rozdělení
+
+leveneTest(data_du3$tok_teplota_5_out ~ data_du3$vyrobce)
+
+
+
+
+
+
+#d
+
+
+
+vector_characteristics(data_du3$tok_teplota_5_out[data_du3$vyrobce == amber])
+vector_characteristics(data_du3$tok_teplota_5_out[data_du3$vyrobce == bright])
+vector_characteristics(data_du3$tok_teplota_5_out[data_du3$vyrobce == clear])
+vector_characteristics(data_du3$tok_teplota_5_out[data_du3$vyrobce == dim])
 
 
 
