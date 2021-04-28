@@ -7,6 +7,7 @@ library(ggplot2)
 library(lawstat)
 library(BSDA)
 library(car)
+library(FSA)
 
 getwd()
 
@@ -322,18 +323,6 @@ ggplot(data_plot,
 
 
 
-
-#otazky nezapomenout:
-
-
-#grafy v pohodě?, grafy title?
-#outliers separatně ok?
-#zaokrouhleni?
-#meze vnitřních hradeb zaokrouhlujeme na o jednu cifru vyšší přesnost, než data v datovém souboru?
-#3s pravidlo zaokrouhlena hodnota? spíše předpokládám nezaokrouhlenou..
-
-
-
 #782.1157
 #782.1
 u_5 = 782.1157
@@ -428,8 +417,6 @@ s_data_du2$pokles[s_data_du2$vyrobce == amber & near(s_data_du2$pokles, 111.6)] 
 s_data_du2$pokles[s_data_du2$vyrobce == bright & near(s_data_du2$pokles, -94.8)] = NA
 
 #actually we can plot one more time krabici WOW!
-
-#PLS odtranit odlehla pozorovani potom histo a qq
 
 binwidth = 0.7
 
@@ -654,11 +641,34 @@ leveneTest(data_du3$tok_teplota_5_out ~ data_du3$vyrobce)
 #d
 
 
+tapply(data_du3$tok_teplota_5_out, data_du3$vyrobce, quantile, probs = 0.5, na.rm = T)
 
+#tapply(data_du3$tok_teplota_5_out, data_du3$vyrobce, SIGN.test, md = 0, conf.level = 0.95)
+tapply(data_du3$tok_teplota_5_out, data_du3$vyrobce, SIGN.test, conf.level = 0.95)
+#tapply(data_du3$tok_teplota_5_out, data_du3$vyrobce, wilcox.test, conf.level = 0.95, conf.int = T)
+
+#tapply(data_du3$tok_teplota_5_out, data_du3$vyrobce, sd, na.rm = T) # kvůli zaokrouhlení
+#3 platné číslice, tzn. desetiny
+
+
+
+##
 vector_characteristics(data_du3$tok_teplota_5_out[data_du3$vyrobce == amber])
 vector_characteristics(data_du3$tok_teplota_5_out[data_du3$vyrobce == bright])
 vector_characteristics(data_du3$tok_teplota_5_out[data_du3$vyrobce == clear])
 vector_characteristics(data_du3$tok_teplota_5_out[data_du3$vyrobce == dim])
+
+
+#e
+# Analýza předpokladů -> normalita KO, symetrie NOT OK! Ačkoliv Kruskalův-Wallisův je nejrobustnější
+# a můžeme ho využít -> Kruskalův-Wallisův test (test o shodě mediánů)
+kruskal.test(data_du3$tok_teplota_5_out ~ data_du3$vyrobce)
+
+
+# Nulovou hypotézu o shodě mediánů ZAMÍTÁME - tzn. mediány se statisticky významně liší.
+# Všechny tři skupiny nelze považovat za homogenní.
+
+dunnTest(tok_teplota_5_out ~ vyrobce, data = data_du3, method = "bonferroni")
 
 
 
